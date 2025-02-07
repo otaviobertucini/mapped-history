@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import Map, { Source, Layer, Popup } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import osmtogeojson from 'osmtogeojson';
-
-// ci trigger
+import './globals.css';
 
 export default function Home() {
   const [geoJsonData, setGeoJsonData] = useState<any>(null);
@@ -42,9 +41,9 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div style={{ width: '100vw', height: '100vh' }}>
       <Map
-        style={{ width: '100%', height: '80vh' }}
+        style={{ width: '100%', height: '100%' }}
         mapStyle='https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
         initialViewState={{
           longitude: -49.280516, 
