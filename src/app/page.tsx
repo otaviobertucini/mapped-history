@@ -1,14 +1,14 @@
-'use client'; // Ensure it runs on the client-side
+'use client';
 
 import { useEffect, useState } from 'react';
-import Map, { Source, Layer } from 'react-map-gl/maplibre';
+import Map, { Source, Layer, Popup } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import osmtogeojson from 'osmtogeojson';
 
 export default function Home() {
   const [geoJsonData, setGeoJsonData] = useState<any>(null);
   const [hoveredFeature, setHoveredFeature] = useState<any>(null);
-  console.log(`🚀 ~ Home ~ hoveredFeature:`, hoveredFeature?.properties?.name);
+  const [popupInfo, setPopupInfo] = useState<any>(null);
 
   useEffect(() => {
     const query = `
@@ -25,9 +25,18 @@ export default function Home() {
   }, []);
 
   const onHover = (event: any) => {
-    const { features } = event;
+    const { features, lngLat } = event;
     const hoveredFeature = features && features[0];
     setHoveredFeature(hoveredFeature);
+    if (hoveredFeature) {
+      setPopupInfo({
+        longitude: lngLat.lng,
+        latitude: lngLat.lat,
+        name: hoveredFeature.properties.name,
+      });
+    } else {
+      setPopupInfo(null);
+    }
   };
 
   return (
@@ -36,9 +45,9 @@ export default function Home() {
         style={{ width: '100%', height: '80vh' }}
         mapStyle='https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
         initialViewState={{
-          longitude: -49.271,
-          latitude: -25.429,
-          zoom: 10,
+          longitude: -49.280516, 
+          latitude: -25.427385,
+          zoom: 12,
         }}
         onMouseMove={onHover}
         onClick={onHover}
@@ -59,10 +68,32 @@ export default function Home() {
               type='line'
               paint={{
                 'line-color': '#000000',
-                'line-width': 2, // Adjust the thickness here
+                'line-width': 2,
               }}
             />
+            {hoveredFeature && (
+              <Layer
+                id='hovered-feature'
+                type='fill'
+                source='neighborhoods'
+                filter={['==', 'id', hoveredFeature?.properties?.id]}
+                paint={{
+                  'fill-opacity': 0.5,
+                }}
+              />
+            )}
           </Source>
+        )}
+        {popupInfo && (
+          <Popup
+            longitude={popupInfo.longitude}
+            latitude={popupInfo.latitude}
+            closeButton={false}
+            closeOnClick={false}
+            anchor='top'
+          >
+            <div>{popupInfo.name}</div>
+          </Popup>
         )}
       </Map>
     </div>
