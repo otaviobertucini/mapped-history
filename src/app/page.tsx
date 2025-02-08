@@ -29,23 +29,33 @@ export default function Home() {
   }, []);
 
   const onNeighborhoodClick = (event: MapLayerMouseEvent) => {
-    const { features } = event;
+    if (selectedSite) {
+      setSelectedSite(null); // If a site was selected, deselect it first
+      return;
+    }
+
+    const { features, lngLat } = event;
     const clickedFeature = features && features[0];
+
     if (clickedFeature) {
       const neighborhoodName = clickedFeature.properties.name;
       const info = neighborhoodInfo[neighborhoodName] || {};
       setPopupInfo({
+        longitude: lngLat.lng,
+        latitude: lngLat.lat,
         name: neighborhoodName,
         description: info.description,
         dateOfFounding: info.dateOfFounding,
         image: info.image,
         pointsOfInterest: info.pointsOfInterest,
       });
-      setSelectedSite(null);
+    } else {
+      setPopupInfo(null);
     }
   };
 
-  const onMarkerClick = (site: SiteInfo) => {
+  const onMarkerClick = (event: any, site: SiteInfo) => {
+    event.stopPropagation(); // Prevents triggering the map's onClick
     setSelectedSite(site);
     setPopupInfo(null);
   };
@@ -72,7 +82,9 @@ export default function Home() {
         )}
         {sitesInfo.map((site) => (
           <Marker key={site.name} longitude={site.coordinates[0]} latitude={site.coordinates[1]}>
-            <div onClick={() => onMarkerClick(site)} style={{ cursor: 'pointer', fontSize: '24px' }}>📍</div>
+            <div onClick={(event) => onMarkerClick(event, site)} style={{ cursor: 'pointer', fontSize: '24px' }}>
+              📍
+            </div>
           </Marker>
         ))}
       </Map>
