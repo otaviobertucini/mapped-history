@@ -8,7 +8,6 @@ interface InfoCardProps {
 }
 
 const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
-  console.log(`🚀 ~ info:`, info)
   if (!info) return null;
 
   return (
@@ -24,22 +23,12 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
       }}
     >
       <CardContent>
-        <IconButton
-          aria-label='close'
-          onClick={onClose}
-          sx={{ position: 'absolute', right: 5, top: 5 }}
-        >
+        <IconButton aria-label='close' onClick={onClose} sx={{ position: 'absolute', right: 5, top: 5 }}>
           <CloseIcon />
         </IconButton>
-        <Typography variant='h6'>
-          {info.name}
-        </Typography>
-        <Typography variant='body2'>
-          {info.description}
-        </Typography>
-        {info.dateOfFounding && (
-          <Typography variant='body2'>Founded: {info.dateOfFounding}</Typography>
-        )}
+        <Typography variant='h6'>{info.name}</Typography>
+        <Typography variant='body2'>{info.description}</Typography>
+        {info.dateOfFounding && <Typography variant='body2'>Founded: {info.dateOfFounding}</Typography>}
         {info.pointsOfInterest && (
           <Typography variant='body2'>Points of Interest: {info.pointsOfInterest.join(', ')}</Typography>
         )}

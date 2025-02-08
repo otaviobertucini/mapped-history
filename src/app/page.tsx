@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Map, { Source, Layer, Marker, MapLayerMouseEvent } from 'react-map-gl/maplibre';
+import Map, { Source, Layer, Marker, MapLayerMouseEvent, MapGeoJSONFeature } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import osmtogeojson from 'osmtogeojson';
 import './globals.css';
@@ -13,7 +13,7 @@ export default function Home() {
   const [geoJsonData, setGeoJsonData] = useState<any>(null);
   const [popupInfo, setPopupInfo] = useState<any>(null);
   const [selectedSite, setSelectedSite] = useState<SiteInfo | null>(null);
-
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState<MapGeoJSONFeature | null>(null);
   useEffect(() => {
     const query = `
         [out:json];
@@ -30,8 +30,7 @@ export default function Home() {
 
   const onNeighborhoodClick = (event: MapLayerMouseEvent) => {
     if (selectedSite) {
-      setSelectedSite(null); // If a site was selected, deselect it first
-      return;
+      setSelectedSite(null);
     }
 
     const { features, lngLat } = event;
@@ -40,6 +39,7 @@ export default function Home() {
     if (clickedFeature) {
       const neighborhoodName = clickedFeature.properties.name;
       const info = neighborhoodInfo[neighborhoodName] || {};
+      setSelectedNeighborhood(clickedFeature);
       setPopupInfo({
         longitude: lngLat.lng,
         latitude: lngLat.lat,
@@ -55,9 +55,10 @@ export default function Home() {
   };
 
   const onMarkerClick = (event: any, site: SiteInfo) => {
-    event.stopPropagation(); // Prevents triggering the map's onClick
+    event.stopPropagation();
     setSelectedSite(site);
     setPopupInfo(null);
+    setSelectedNeighborhood(null);
   };
 
   const closeInfoCard = () => {
@@ -68,7 +69,7 @@ export default function Home() {
   return (
     <div className='relative' style={{ width: '100vw', height: '100vh' }}>
       <Map
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: '100%', height: '100%', cursor: 'pointer' }}
         mapStyle='https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
         initialViewState={{ longitude: -49.280516, latitude: -25.427385, zoom: 12 }}
         onClick={onNeighborhoodClick}
@@ -78,6 +79,17 @@ export default function Home() {
           <Source id='neighborhoods' type='geojson' data={geoJsonData}>
             <Layer id='neighborhoods-layer' type='fill' paint={{ 'fill-color': '#0080ff', 'fill-opacity': 0.5 }} />
             <Layer id='neighborhoods-borders' type='line' paint={{ 'line-color': '#000000', 'line-width': 2 }} />
+            {selectedNeighborhood && (
+              <Layer
+                id='hovered-feature'
+                type='fill'
+                source='neighborhoods'
+                filter={['==', 'id', selectedNeighborhood?.properties?.id]}
+                paint={{
+                  'fill-opacity': 0.5,
+                }}
+              />
+            )}
           </Source>
         )}
         {sitesInfo.map((site) => (
