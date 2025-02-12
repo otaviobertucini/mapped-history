@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Map, { Source, Layer, Marker, MapLayerMouseEvent, MapGeoJSONFeature } from 'react-map-gl/maplibre';
+import Map, { Source, Layer, Marker, Popup, MapLayerMouseEvent, MapGeoJSONFeature } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import osmtogeojson from 'osmtogeojson';
 import './globals.css';
@@ -14,6 +14,7 @@ export default function Home() {
   const [popupInfo, setPopupInfo] = useState<any>(null);
   const [selectedSite, setSelectedSite] = useState<SiteInfo | null>(null);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<MapGeoJSONFeature | null>(null);
+
   useEffect(() => {
     const query = `
         [out:json];
@@ -97,6 +98,18 @@ export default function Home() {
             <div onClick={(event) => onMarkerClick(event, site)} style={{ cursor: 'pointer', fontSize: '24px' }}>
               📍
             </div>
+            <Popup
+              longitude={site.coordinates[0]}
+              latitude={site.coordinates[1]}
+              closeButton={false}
+              closeOnClick={false}
+              anchor='right'
+              offset={[-2, -10]}
+              maxWidth='fit-content'
+              className='popup-no-padding'
+            >
+              <div>{site.name}</div>
+            </Popup>
           </Marker>
         ))}
       </Map>
