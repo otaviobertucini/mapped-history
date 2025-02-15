@@ -16,7 +16,14 @@ export default function Home({ geoJsonData }: HomeProps) {
   const [popupInfo, setPopupInfo] = useState<any>(null);
   const [selectedSite, setSelectedSite] = useState<SiteInfo | null>(null);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<MapGeoJSONFeature | null>(null);
-  console.log(`🚀 ~ Home ~ selectedNeighborhood:`, selectedNeighborhood?.properties["@id"])
+
+  const [currentZoom, setCurrentZoom] = useState<number>(12);
+
+  const ZOOM_THRESHOLD = 13;
+
+  const handleZoomEnd = (event: any) => {
+    setCurrentZoom(event.viewState.zoom);
+  };
 
   const onNeighborhoodClick = (event: MapLayerMouseEvent) => {
     if (selectedSite) {
@@ -64,6 +71,10 @@ export default function Home({ geoJsonData }: HomeProps) {
         initialViewState={{ longitude: -49.280516, latitude: -25.427385, zoom: 12 }}
         onClick={onNeighborhoodClick}
         interactiveLayerIds={['neighborhoods-layer']}
+        onZoom={handleZoomEnd}
+        dragRotate={false}
+        pitchWithRotate={false}
+        
       >
         {geoJsonData && (
           <Source id='neighborhoods' type='geojson' data={geoJsonData}>
@@ -74,7 +85,7 @@ export default function Home({ geoJsonData }: HomeProps) {
                 id='hovered-feature'
                 type='fill'
                 source='neighborhoods'
-                filter={['==', '@id', selectedNeighborhood?.properties["@id"]]}
+                filter={['==', '@id', selectedNeighborhood?.properties['@id']]}
                 paint={{
                   'fill-opacity': 0.5,
                 }}
@@ -88,9 +99,11 @@ export default function Home({ geoJsonData }: HomeProps) {
               <div onClick={(event) => onMarkerClick(event, site)} style={{ cursor: 'pointer', fontSize: '24px' }}>
                 📍
               </div>
-              <div className='custom-popup'>
-                <div>{site.name}</div>
-              </div>
+              {currentZoom >= ZOOM_THRESHOLD && (
+                <div className='custom-popup'>
+                  <div>{site.name}</div>
+                </div>
+              )}
             </div>
           </Marker>
         ))}
