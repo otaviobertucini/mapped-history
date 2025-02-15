@@ -16,6 +16,7 @@ export default function Home({ geoJsonData }: HomeProps) {
   const [popupInfo, setPopupInfo] = useState<any>(null);
   const [selectedSite, setSelectedSite] = useState<SiteInfo | null>(null);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<MapGeoJSONFeature | null>(null);
+  const [hoveredSite, setHoveredSite] = useState<string | null>(null);
 
   const [currentZoom, setCurrentZoom] = useState<number>(12);
 
@@ -74,7 +75,6 @@ export default function Home({ geoJsonData }: HomeProps) {
         onZoom={handleZoomEnd}
         dragRotate={false}
         pitchWithRotate={false}
-        
       >
         {geoJsonData && (
           <Source id='neighborhoods' type='geojson' data={geoJsonData}>
@@ -94,17 +94,27 @@ export default function Home({ geoJsonData }: HomeProps) {
           </Source>
         )}
         {sitesInfo.map((site) => (
-          <Marker key={site.name} longitude={site.coordinates[0]} latitude={site.coordinates[1]}>
-            <div style={{ position: 'relative', display: 'inline-block' }}>
-              <div onClick={(event) => onMarkerClick(event, site)} style={{ cursor: 'pointer', fontSize: '24px' }}>
-                📍
-              </div>
-              {currentZoom >= ZOOM_THRESHOLD && (
-                <div className='custom-popup'>
-                  <div>{site.name}</div>
-                </div>
-              )}
+          <Marker
+            key={site.name}
+            longitude={site.coordinates[0]}
+            latitude={site.coordinates[1]}
+            onClick={(event) => onMarkerClick(event, site)}
+          >
+            <div onClick={(event) => onMarkerClick(event, site)} style={{ cursor: 'pointer', fontSize: '24px' }}>
+              📍
             </div>
+            {currentZoom >= ZOOM_THRESHOLD && (
+              <div
+                className={`custom-popup ${
+                  hoveredSite === site.name || selectedSite?.name === site.name ? 'custom-popup-active' : ''
+                }`}
+                onMouseEnter={() => setHoveredSite(site.name)}
+                onMouseLeave={() => setHoveredSite(null)}
+                onClick={(event) => onMarkerClick(event, site)}
+              >
+                <div>{site.name}</div>
+              </div>
+            )}
           </Marker>
         ))}
       </Map>

@@ -21,5 +21,12 @@ export const sitesInfo: SiteInfo[] = [
     coordinates: [-49.263, -25.416],
     image: 'url_to_image2',
   },
+  {
+    name: 'Teste Teste',
+    description: 'A museum dedicated to visual arts, architecture, and design.',
+    type: 'Historical',
+    coordinates: [-49.263, -25.4162],
+    image: 'url_to_image2',
+  },
   // Add more sites as needed
 ];

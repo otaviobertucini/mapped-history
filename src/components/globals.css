@@ -22,5 +22,16 @@ body {
   border: 1px solid #ccc;
   border-radius: 3px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  z-index: 10;
+  z-index: 1;
+  transition: all 0.2s ease-in-out;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.custom-popup-active {
+  z-index: 10000 !important;
+  transform: scale(1.1);
+  background-color: #f0f0f0;
+  border-color: #999;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
