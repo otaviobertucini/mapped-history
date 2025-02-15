@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import Map, { Source, Layer, Marker, MapLayerMouseEvent, MapGeoJSONFeature } from 'react-map-gl/maplibre';
+import { useState, useRef } from 'react';
+import Map, { Source, Layer, Marker, MapLayerMouseEvent, MapGeoJSONFeature, MapRef } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './globals.css';
 import { neighborhoodInfo } from './neighborhoodInfo';
@@ -22,8 +22,18 @@ export default function Home({ geoJsonData }: HomeProps) {
 
   const ZOOM_THRESHOLD = 13;
 
+  const mapRef = useRef<MapRef>(null);
+
   const handleZoomEnd = (event: any) => {
     setCurrentZoom(event.viewState.zoom);
+  };
+
+  const centerMapOn = (coordinates: [number, number]) => {
+    mapRef.current?.flyTo({
+      center: coordinates,
+      duration: 1000,
+      zoom: Math.max(currentZoom, ZOOM_THRESHOLD)
+    });
   };
 
   const onNeighborhoodClick = (event: MapLayerMouseEvent) => {
@@ -47,6 +57,8 @@ export default function Home({ geoJsonData }: HomeProps) {
         image: info.image,
         pointsOfInterest: info.pointsOfInterest,
       });
+
+      centerMapOn([lngLat.lng, lngLat.lat]);
     } else {
       setPopupInfo(null);
     }
@@ -57,16 +69,19 @@ export default function Home({ geoJsonData }: HomeProps) {
     setSelectedSite(site);
     setPopupInfo(null);
     setSelectedNeighborhood(null);
+    centerMapOn(site.coordinates);
   };
 
   const closeInfoCard = () => {
     setPopupInfo(null);
     setSelectedSite(null);
+    setSelectedNeighborhood(null);
   };
 
   return (
     <div className='relative' style={{ width: '100vw', height: '100vh' }}>
       <Map
+        ref={mapRef}
         style={{ width: '100%', height: '100%', cursor: 'pointer' }}
         mapStyle='https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
         initialViewState={{ longitude: -49.280516, latitude: -25.427385, zoom: 12 }}
