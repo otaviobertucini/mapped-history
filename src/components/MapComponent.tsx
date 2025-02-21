@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Map, { Source, Layer, Marker, MapLayerMouseEvent, MapGeoJSONFeature, MapRef } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './globals.css';
@@ -17,6 +17,7 @@ export default function Home({ geoJsonData }: HomeProps) {
   const [selectedSite, setSelectedSite] = useState<SiteInfo | null>(null);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<MapGeoJSONFeature | null>(null);
   const [hoveredSite, setHoveredSite] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [currentZoom, setCurrentZoom] = useState<number>(12);
 
@@ -24,16 +25,38 @@ export default function Home({ geoJsonData }: HomeProps) {
 
   const mapRef = useRef<MapRef>(null);
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleZoomEnd = (event: any) => {
     setCurrentZoom(event.viewState.zoom);
   };
 
   const centerMapOn = (coordinates: [number, number]) => {
-    mapRef.current?.flyTo({
-      center: coordinates,
-      duration: 1000,
-      zoom: Math.max(currentZoom, ZOOM_THRESHOLD)
-    });
+    if (isMobile) {
+      mapRef.current?.flyTo({
+        center: coordinates,
+        duration: 1000,
+        zoom: Math.max(currentZoom, ZOOM_THRESHOLD + 1),
+        padding: { top: 600, bottom: 0, left: 0, right: 100 },
+        essential: true
+      });
+    } else {
+      mapRef.current?.flyTo({
+        center: coordinates,
+        duration: 1000,
+        zoom: Math.max(currentZoom, ZOOM_THRESHOLD),
+        essential: true
+      });
+    }
   };
 
   const onNeighborhoodClick = (event: MapLayerMouseEvent) => {
@@ -113,12 +136,11 @@ export default function Home({ geoJsonData }: HomeProps) {
             key={site.name}
             longitude={site.coordinates[0]}
             latitude={site.coordinates[1]}
-            onClick={(event) => onMarkerClick(event, site)}
           >
             <div onClick={(event) => onMarkerClick(event, site)} style={{ cursor: 'pointer', fontSize: '24px' }}>
               📍
             </div>
-            {currentZoom >= ZOOM_THRESHOLD && (
+            {(currentZoom >= ZOOM_THRESHOLD) && (
               <div
                 className={`custom-popup ${
                   hoveredSite === site.name || selectedSite?.name === site.name ? 'custom-popup-active' : ''

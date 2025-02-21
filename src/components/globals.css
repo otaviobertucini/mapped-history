@@ -34,4 +34,17 @@ body {
   background-color: #f0f0f0;
   border-color: #999;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  left: 35px;
+}
+
+@media (max-width: 768px) {
+  .info-card {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    max-height: 40vh;
+    overflow-y: auto;
+    z-index: 1000;
+  }
 }
