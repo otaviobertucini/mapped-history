@@ -1,0 +1,32 @@
+.infoCard {
+  position: absolute;
+  top: 1%;
+  left: 2%;
+  width: 300px;
+  background-color: white;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  z-index: 10;
+  max-height: 70vh;
+}
+
+@media (max-width: 768px) {
+  .infoCard {
+    top: 33%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+    max-height: 60vh;
+    right: auto;
+  }
+}
+
+.closeButton {
+  min-width: 24px !important;
+  min-height: 24px !important;
+  margin-top: 4px !important;
+}
+
+.title {
+  margin-top: 4px;
+}
