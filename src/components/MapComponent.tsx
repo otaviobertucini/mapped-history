@@ -40,13 +40,35 @@ export default function Home({ geoJsonData }: HomeProps) {
     setCurrentZoom(event.viewState.zoom);
   };
 
+  const calculatePadding = () => {
+    const screenHeight = window.innerHeight;
+    console.log(`🚀 ~ calculatePadding ~ screenHeight:`, screenHeight)
+    const screenWidth = window.innerWidth;
+    console.log(`🚀 ~ calculatePadding ~ screenWidth:`, screenWidth)
+    
+    if (isMobile) {
+      // On mobile, adjust padding based on screen height
+      const topPadding = Math.min(screenHeight * 0.7, 500); // 40% of screen height, max 500px
+      const rightPadding = Math.min(screenWidth * 0.1, 100); // 10% of screen width, max 100px
+      
+      return {
+        top: topPadding,
+        bottom: 0,
+        left: 0,
+        right: rightPadding
+      };
+    }
+    
+    return undefined; // No padding on desktop
+  };
+
   const centerMapOn = (coordinates: [number, number]) => {
     if (isMobile) {
       mapRef.current?.flyTo({
         center: coordinates,
         duration: 1000,
         zoom: Math.max(currentZoom, ZOOM_THRESHOLD + 1),
-        padding: { top: 600, bottom: 0, left: 0, right: 100 },
+        padding: calculatePadding(),
         essential: true
       });
     } else {
