@@ -42,14 +42,11 @@ export default function Home({ geoJsonData }: HomeProps) {
 
   const calculatePadding = () => {
     const screenHeight = window.innerHeight;
-    console.log(`🚀 ~ calculatePadding ~ screenHeight:`, screenHeight)
     const screenWidth = window.innerWidth;
-    console.log(`🚀 ~ calculatePadding ~ screenWidth:`, screenWidth)
     
     if (isMobile) {
-      // On mobile, adjust padding based on screen height
-      const topPadding = Math.min(screenHeight * 0.7, 500); // 40% of screen height, max 500px
-      const rightPadding = Math.min(screenWidth * 0.1, 100); // 10% of screen width, max 100px
+      const topPadding = Math.min(screenHeight * 0.7, 500);
+      const rightPadding = Math.min(screenWidth * 0.1, 100);
       
       return {
         top: topPadding,
@@ -59,7 +56,7 @@ export default function Home({ geoJsonData }: HomeProps) {
       };
     }
     
-    return undefined; // No padding on desktop
+    return undefined;
   };
 
   const centerMapOn = (coordinates: [number, number]) => {
