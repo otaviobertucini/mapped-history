@@ -2,13 +2,16 @@
   position: absolute;
   top: 1%;
   left: 2%;
-  width: 300px;
-  background-color: white;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  width: 320px;
+  background-color: #fafafa; /* Softer background */
+  border-radius: 12px; /* Smooth rounded corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Softer shadow */
   z-index: 10;
   max-height: 70vh;
   display: flex;
   flex-direction: column;
+  padding: 12px; /* More breathing room */
+  transition: all 0.3s ease-in-out; /* Smooth animations */
 }
 
 @media (max-width: 768px) {
@@ -16,7 +19,7 @@
     width: auto;
     left: 0;
     right: 0;
-    margin: 10px;
+    margin: 12px;
     top: 0%;
     max-height: 60vh;
   }
@@ -25,27 +28,39 @@
 .header {
   position: sticky;
   top: 0;
-  background: white;
+  background: #ffffff;
   z-index: 20;
   padding-bottom: 8px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #eee; /* Softer border */
+  border-radius: 12px 12px 0 0; /* Match rounded corners */
 }
 
 .content {
   overflow-y: auto; /* Enable vertical scrolling */
   overflow-x: hidden; /* Disable horizontal scrolling */
   max-height: calc(70vh - 180px); /* Ensure the content has space to scroll */
-  padding-right: 8px; /* Prevent content cutoff */
+  padding: 12px;
+  color: #333; /* Better contrast */
+  line-height: 1.5; /* Improve readability */
 }
 
 .closeButton {
   position: absolute !important;
-  top: -3px;
-  right: -5px;
-  min-width: 24px !important;
-  min-height: 24px !important;
+  top: 6px;
+  right: 6px;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  background: rgba(0, 0, 0, 0.05); /* Soft background */
+  border-radius: 50%; /* Circular button */
+  transition: background 0.2s ease-in-out;
+}
+
+.closeButton:hover {
+  background: rgba(0, 0, 0, 0.15); /* Slight highlight */
 }
 
 .title {
   margin-top: 4px;
+  font-weight: bold;
+  color: #222; /* Darker title */
 }
