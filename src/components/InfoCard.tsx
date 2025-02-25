@@ -33,7 +33,14 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
 
         {/* Scrollable Content */}
         <div className={styles.content}>
-          <Typography variant='body2'>{info.description}</Typography>
+          <Typography
+            variant='body2'
+            sx={{
+              overflowWrap: 'anywhere',
+            }}
+          >
+            {info.description}
+          </Typography>
           {info.dateOfFounding && <Typography variant='body2'>Founded: {info.dateOfFounding}</Typography>}
           {info.pointsOfInterest && (
             <Typography variant='body2'>Points of Interest: {info.pointsOfInterest.join(', ')}</Typography>

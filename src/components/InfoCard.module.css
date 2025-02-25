@@ -39,9 +39,11 @@
 }
 
 .closeButton {
+  position: absolute !important;
+  top: -3px;
+  right: -5px;
   min-width: 24px !important;
   min-height: 24px !important;
-  margin-top: 4px !important;
 }
 
 .title {
