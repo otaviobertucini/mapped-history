@@ -7,6 +7,8 @@
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
   z-index: 10;
   max-height: 70vh;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 768px) {
@@ -14,10 +16,26 @@
     width: auto;
     left: 0;
     right: 0;
-    margin: 10px 10px;
+    margin: 10px;
     top: 0%;
     max-height: 60vh;
   }
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 20;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.content {
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Disable horizontal scrolling */
+  max-height: calc(70vh - 180px); /* Ensure the content has space to scroll */
+  padding-right: 8px; /* Prevent content cutoff */
 }
 
 .closeButton {

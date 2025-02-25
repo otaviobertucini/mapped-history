@@ -14,35 +14,31 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
 
   return (
     <Card className={styles.infoCard}>
-      <CardContent>
-        <Grid container spacing={1} alignItems="flex-start">
-          <Grid size={11}>
-            <Typography variant='h6' className={styles.title}>
-              {info.name}
-            </Typography>
-          </Grid>
-          <Grid size={1} sx={{ textAlign: 'right' }}>
-            <IconButton 
-              aria-label='close' 
-              onClick={onClose} 
-              className={styles.closeButton}
-              size="small"
-            >
-              <CloseIcon fontSize='small' />
-            </IconButton>
-          </Grid>
-          <Grid size={12}>
-            <Typography variant='body2'>{info.description}</Typography>
-            {info.dateOfFounding && (
-              <Typography variant='body2'>Founded: {info.dateOfFounding}</Typography>
-            )}
-            {info.pointsOfInterest && (
-              <Typography variant='body2'>
-                Points of Interest: {info.pointsOfInterest.join(', ')}
+      <CardContent style={{ paddingBottom: '8px' }}>
+        {/* Fixed Header */}
+        <div className={styles.header}>
+          <Grid container spacing={1} alignItems='center'>
+            <Grid size={11}>
+              <Typography variant='h6' className={styles.title}>
+                {info.name}
               </Typography>
-            )}
+            </Grid>
+            <Grid size={1} sx={{ textAlign: 'right' }}>
+              <IconButton aria-label='close' onClick={onClose} className={styles.closeButton} size='small'>
+                <CloseIcon fontSize='small' />
+              </IconButton>
+            </Grid>
           </Grid>
-        </Grid>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className={styles.content}>
+          <Typography variant='body2'>{info.description}</Typography>
+          {info.dateOfFounding && <Typography variant='body2'>Founded: {info.dateOfFounding}</Typography>}
+          {info.pointsOfInterest && (
+            <Typography variant='body2'>Points of Interest: {info.pointsOfInterest.join(', ')}</Typography>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
