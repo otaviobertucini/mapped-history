@@ -64,3 +64,65 @@
   font-weight: bold;
   color: #222; /* Darker title */
 }
+
+.gallery {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  background: #fff;
+  margin: 8px 0;
+}
+
+.galleryImage {
+  width: 80px;  /* smaller thumbnail size */
+  height: 60px; /* smaller thumbnail size */
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.galleryImage:hover {
+  transform: scale(1.05);
+}
+
+.galleryArrow {
+  background: rgba(0, 0, 0, 0.05) !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.modalContent {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  background: transparent;
+  outline: none;
+}
+
+.modalImage {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.modalClose {
+  position: absolute !important;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #000 !important;
+  &:hover {
+    background: rgba(255, 255, 255, 1) !important;
+  }
+}

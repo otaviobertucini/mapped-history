@@ -1,21 +1,41 @@
-import React from 'react';
-import { Card, CardContent, Typography, IconButton } from '@mui/material';
+import React, { useState } from 'react';
+import { Card, CardContent, Typography, IconButton, Modal, Box } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import CloseIcon from '@mui/icons-material/Close';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import styles from './InfoCard.module.css';
 
 interface InfoCardProps {
-  info: any;
+  info: {
+    name: string;
+    description: string;
+    dateOfFounding?: string;
+    pointsOfInterest?: string[];
+    images?: string[]; // Add this new property
+  };
   onClose: () => void;
 }
 
 const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+
   if (!info) return null;
+
+  const handlePrevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : (info.images?.length || 1) - 1));
+  };
+
+  const handleNextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev < (info.images?.length || 1) - 1 ? prev + 1 : 0));
+  };
 
   return (
     <Card className={styles.infoCard}>
       <CardContent style={{ paddingBottom: '8px' }}>
-        {/* Fixed Header */}
         <div className={styles.header}>
           <Grid container spacing={1} alignItems='center'>
             <Grid size={11}>
@@ -31,7 +51,23 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
           </Grid>
         </div>
 
-        {/* Scrollable Content */}
+        {info.images && info.images.length > 0 && (
+          <div className={styles.gallery}>
+            <IconButton className={styles.galleryArrow} onClick={handlePrevImage} size='small'>
+              <ArrowBackIosIcon />
+            </IconButton>
+            <img
+              src={info.images[currentImageIndex]}
+              alt={`${info.name} - ${currentImageIndex + 1}`}
+              className={styles.galleryImage}
+              onClick={() => setModalOpen(true)}
+            />
+            <IconButton className={styles.galleryArrow} onClick={handleNextImage} size='small'>
+              <ArrowForwardIosIcon />
+            </IconButton>
+          </div>
+        )}
+
         <div className={styles.content}>
           <Typography
             variant='body2'
@@ -47,6 +83,30 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
           )}
         </div>
       </CardContent>
+
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        className={styles.modal}
+        slotProps={{
+          backdrop: {
+            style: {
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            },
+          },
+        }}
+      >
+        <Box className={styles.modalContent}>
+          <img
+            src={info.images?.[currentImageIndex]}
+            alt={`${info.name} - ${currentImageIndex + 1}`}
+            className={styles.modalImage}
+          />
+          <IconButton onClick={() => setModalOpen(false)} className={styles.modalClose} size='small'>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+      </Modal>
     </Card>
   );
 };
