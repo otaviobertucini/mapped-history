@@ -6,15 +6,15 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import './globals.css';
 import { neighborhoodInfo } from './neighborhoodInfo';
 import { sitesInfo, SiteInfo } from './sitesInfo';
-import InfoCard from './InfoCard';
+import InfoCard, { InfoCardContent } from './InfoCard';
 
 interface HomeProps {
   geoJsonData: any;
 }
 
 export default function Home({ geoJsonData }: HomeProps) {
-  const [popupInfo, setPopupInfo] = useState<any>(null);
-  const [selectedSite, setSelectedSite] = useState<SiteInfo | null>(null);
+  const [popupInfo, setPopupInfo] = useState<InfoCardContent | null>(null);
+  const [selectedSite, setSelectedSite] = useState<InfoCardContent | null>(null);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<MapGeoJSONFeature | null>(null);
   const [hoveredSite, setHoveredSite] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -29,10 +29,10 @@ export default function Home({ geoJsonData }: HomeProps) {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -43,19 +43,19 @@ export default function Home({ geoJsonData }: HomeProps) {
   const calculatePadding = () => {
     const screenHeight = window.innerHeight;
     const screenWidth = window.innerWidth;
-    
+
     if (isMobile) {
       const topPadding = Math.min(screenHeight * 0.7, 500);
       const rightPadding = Math.min(screenWidth * 0.1, 100);
-      
+
       return {
         top: topPadding,
         bottom: 0,
         left: 0,
-        right: rightPadding
+        right: rightPadding,
       };
     }
-    
+
     return undefined;
   };
 
@@ -66,14 +66,14 @@ export default function Home({ geoJsonData }: HomeProps) {
         duration: 1000,
         zoom: Math.max(currentZoom, ZOOM_THRESHOLD + 1),
         padding: calculatePadding(),
-        essential: true
+        essential: true,
       });
     } else {
       mapRef.current?.flyTo({
         center: coordinates,
         duration: 1000,
         zoom: Math.max(currentZoom, ZOOM_THRESHOLD),
-        essential: true
+        essential: true,
       });
     }
   };
@@ -91,13 +91,12 @@ export default function Home({ geoJsonData }: HomeProps) {
       const info = neighborhoodInfo[neighborhoodName] || {};
       setSelectedNeighborhood(clickedFeature);
       setPopupInfo({
-        longitude: lngLat.lng,
-        latitude: lngLat.lat,
         name: neighborhoodName,
         description: info.description,
         dateOfFounding: info.dateOfFounding,
-        image: info.image,
+        images: info.images,
         pointsOfInterest: info.pointsOfInterest,
+        type: 'NEIGHBORHOOD',
       });
 
       centerMapOn([lngLat.lng, lngLat.lat]);
@@ -108,7 +107,7 @@ export default function Home({ geoJsonData }: HomeProps) {
 
   const onMarkerClick = (event: any, site: SiteInfo) => {
     event.stopPropagation();
-    setSelectedSite(site);
+    setSelectedSite({ ...site, type: 'SITE' });
     setPopupInfo(null);
     setSelectedNeighborhood(null);
     centerMapOn(site.coordinates);
@@ -151,15 +150,11 @@ export default function Home({ geoJsonData }: HomeProps) {
           </Source>
         )}
         {sitesInfo.map((site) => (
-          <Marker
-            key={site.name}
-            longitude={site.coordinates[0]}
-            latitude={site.coordinates[1]}
-          >
+          <Marker key={site.name} longitude={site.coordinates[0]} latitude={site.coordinates[1]}>
             <div onClick={(event) => onMarkerClick(event, site)} style={{ cursor: 'pointer', fontSize: '24px' }}>
               📍
             </div>
-            {(currentZoom >= ZOOM_THRESHOLD) && (
+            {currentZoom >= ZOOM_THRESHOLD && (
               <div
                 className={`custom-popup ${
                   hoveredSite === site.name || selectedSite?.name === site.name ? 'custom-popup-active' : ''

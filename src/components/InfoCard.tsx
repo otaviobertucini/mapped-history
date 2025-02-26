@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import { Card, CardContent, Typography, IconButton, Modal, Box } from '@mui/material';
 import Grid from '@mui/material/Grid2';
@@ -6,14 +7,17 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import styles from './InfoCard.module.css';
 
+export interface InfoCardContent {
+  name: string;
+  description: string;
+  dateOfFounding?: string;
+  pointsOfInterest?: string[];
+  images?: string[];
+  type: 'SITE' | 'NEIGHBORHOOD';
+}
+
 interface InfoCardProps {
-  info: {
-    name: string;
-    description: string;
-    dateOfFounding?: string;
-    pointsOfInterest?: string[];
-    images?: string[]; // Add this new property
-  };
+  info: InfoCardContent | null;
   onClose: () => void;
 }
 
@@ -25,12 +29,12 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
 
   const handlePrevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : (info.images?.length || 1) - 1));
+    setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : prev));
   };
 
   const handleNextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev < (info.images?.length || 1) - 1 ? prev + 1 : 0));
+    setCurrentImageIndex((prev) => (prev < (info.images?.length || 1) - 1 ? prev + 1 : prev));
   };
 
   return (
@@ -65,7 +69,6 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
               </IconButton>
 
               <div className={styles.galleryImageContainer}>
-                {/* Previous Image */}
                 <div className={`${styles.imageWrapper} ${styles.prevImage}`}>
                   {currentImageIndex > 0 && (
                     <img
@@ -75,8 +78,6 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
                     />
                   )}
                 </div>
-
-                {/* Current Image */}
                 <div className={`${styles.imageWrapper} ${styles.currentImage}`}>
                   <img
                     src={info.images[currentImageIndex]}
@@ -85,8 +86,6 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
                     onClick={() => setModalOpen(true)}
                   />
                 </div>
-
-                {/* Next Image */}
                 <div className={`${styles.imageWrapper} ${styles.nextImage}`}>
                   {currentImageIndex < info.images.length - 1 && (
                     <img
@@ -97,7 +96,6 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
                   )}
                 </div>
               </div>
-
               <IconButton
                 className={styles.galleryArrow}
                 onClick={handleNextImage}
@@ -123,7 +121,6 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
           )}
         </div>
       </CardContent>
-
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
