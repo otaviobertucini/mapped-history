@@ -51,24 +51,64 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
           </Grid>
         </div>
 
-        {info.images && info.images.length > 0 && (
-          <div className={styles.gallery}>
-            <IconButton className={styles.galleryArrow} onClick={handlePrevImage} size='small'>
-              <ArrowBackIosIcon />
-            </IconButton>
-            <img
-              src={info.images[currentImageIndex]}
-              alt={`${info.name} - ${currentImageIndex + 1}`}
-              className={styles.galleryImage}
-              onClick={() => setModalOpen(true)}
-            />
-            <IconButton className={styles.galleryArrow} onClick={handleNextImage} size='small'>
-              <ArrowForwardIosIcon />
-            </IconButton>
-          </div>
-        )}
-
         <div className={styles.content}>
+          {info.images && info.images.length > 0 && (
+            <div className={styles.gallery}>
+              <IconButton
+                className={styles.galleryArrow}
+                onClick={handlePrevImage}
+                size='small'
+                disabled={info.images.length <= 1}
+                sx={{ opacity: currentImageIndex === 0 ? 0.3 : 1 }}
+              >
+                <ArrowBackIosIcon />
+              </IconButton>
+
+              <div className={styles.galleryImageContainer}>
+                {/* Previous Image */}
+                <div className={`${styles.imageWrapper} ${styles.prevImage}`}>
+                  {currentImageIndex > 0 && (
+                    <img
+                      src={info.images[currentImageIndex - 1]}
+                      alt={`${info.name} - previous`}
+                      className={styles.galleryImage}
+                    />
+                  )}
+                </div>
+
+                {/* Current Image */}
+                <div className={`${styles.imageWrapper} ${styles.currentImage}`}>
+                  <img
+                    src={info.images[currentImageIndex]}
+                    alt={`${info.name} - ${currentImageIndex + 1}`}
+                    className={styles.galleryImage}
+                    onClick={() => setModalOpen(true)}
+                  />
+                </div>
+
+                {/* Next Image */}
+                <div className={`${styles.imageWrapper} ${styles.nextImage}`}>
+                  {currentImageIndex < info.images.length - 1 && (
+                    <img
+                      src={info.images[currentImageIndex + 1]}
+                      alt={`${info.name} - next`}
+                      className={styles.galleryImage}
+                    />
+                  )}
+                </div>
+              </div>
+
+              <IconButton
+                className={styles.galleryArrow}
+                onClick={handleNextImage}
+                size='small'
+                disabled={info.images.length <= 1}
+                sx={{ opacity: currentImageIndex === info.images.length - 1 ? 0.3 : 1 }}
+              >
+                <ArrowForwardIosIcon />
+              </IconButton>
+            </div>
+          )}
           <Typography
             variant='body2'
             sx={{

@@ -72,26 +72,86 @@
   padding: 8px 0;
   background: #fff;
   margin: 8px 0;
+  position: relative;
+  height: 80px;
+}
+
+.galleryImageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+  margin: 0 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.imageWrapper {
+  position: relative;
+  transition: all 0.3s ease-in-out;
 }
 
 .galleryImage {
-  width: 80px;  /* smaller thumbnail size */
-  height: 60px; /* smaller thumbnail size */
+  width: 60px;
+  height: 45px;
   object-fit: cover;
   border-radius: 4px;
-  cursor: pointer;
-  transition: transform 0.2s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
 }
 
-.galleryImage:hover {
-  transform: scale(1.05);
+.currentImage {
+  z-index: 2;
+  transform: scale(1.2);
+}
+
+.currentImage .galleryImage {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.prevImage, .nextImage {
+  opacity: 0.5;
+  transform: scale(0.8);
 }
 
 .galleryArrow {
   background: rgba(0, 0, 0, 0.05) !important;
   width: 24px !important;
   height: 24px !important;
+  z-index: 3;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.galleryArrow:disabled {
+  background: rgba(0, 0, 0, 0.02) !important;
+  cursor: default;
+}
+
+.galleryArrow:not(:disabled):hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
 }
 
 .modal {

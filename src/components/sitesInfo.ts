@@ -44,6 +44,7 @@ export const sitesInfo: SiteInfo[] = [
     images: [
       'https://i.pinimg.com/736x/51/cb/37/51cb37ea44e978e03958f5fec9334227.jpg',
       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRC5EbtKKYD3zmNKJf1EThidFhsSajAxVoZUQ&s',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSla5WcG7IXgQFooy1LTBGbX7PFNrkaetgRBg&s',
     ],
     status: ['Exists', 'CanBeVisited'],
   },
