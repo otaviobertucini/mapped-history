@@ -37,6 +37,11 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
     setCurrentImageIndex((prev) => (prev < (info.images?.length || 1) - 1 ? prev + 1 : prev));
   };
 
+  const handleImageClick = (index: number) => {
+    setCurrentImageIndex(index);
+    setModalOpen(true);
+  };
+
   return (
     <Card className={styles.infoCard}>
       <CardContent style={{ paddingBottom: '8px' }}>
@@ -75,6 +80,7 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
                       src={info.images[currentImageIndex - 1]}
                       alt={`${info.name} - previous`}
                       className={styles.galleryImage}
+                      onClick={() => handleImageClick(currentImageIndex - 1)}
                     />
                   )}
                 </div>
@@ -83,7 +89,7 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
                     src={info.images[currentImageIndex]}
                     alt={`${info.name} - ${currentImageIndex + 1}`}
                     className={styles.galleryImage}
-                    onClick={() => setModalOpen(true)}
+                    onClick={() => handleImageClick(currentImageIndex)}
                   />
                 </div>
                 <div className={`${styles.imageWrapper} ${styles.nextImage}`}>
@@ -92,6 +98,7 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
                       src={info.images[currentImageIndex + 1]}
                       alt={`${info.name} - next`}
                       className={styles.galleryImage}
+                      onClick={() => handleImageClick(currentImageIndex + 1)}
                     />
                   )}
                 </div>
@@ -125,10 +132,12 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         className={styles.modal}
+        closeAfterTransition
         slotProps={{
           backdrop: {
+            timeout: 300,
             style: {
-              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              transition: 'opacity 0.3s ease-in-out',
             },
           },
         }}
@@ -139,7 +148,11 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
             alt={`${info.name} - ${currentImageIndex + 1}`}
             className={styles.modalImage}
           />
-          <IconButton onClick={() => setModalOpen(false)} className={styles.modalClose} size='small'>
+          <IconButton 
+            onClick={() => setModalOpen(false)} 
+            className={styles.modalClose}
+            size='small'
+          >
             <CloseIcon />
           </IconButton>
         </Box>

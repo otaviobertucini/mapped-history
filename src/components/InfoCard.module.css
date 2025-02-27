@@ -159,6 +159,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.8);
+  animation: modalBackdropFade 0.3s ease-in-out;
 }
 
 .modalContent {
@@ -167,6 +168,27 @@
   max-height: 95vh;
   background: transparent;
   outline: none;
+  animation: modalContentZoom 0.3s ease-in-out;
+}
+
+@keyframes modalBackdropFade {
+  from {
+    background: rgba(0, 0, 0, 0);
+  }
+  to {
+    background: rgba(0, 0, 0, 0.8);
+  }
+}
+
+@keyframes modalContentZoom {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .modalImage {
@@ -174,6 +196,20 @@
   max-height: 95vh;
   object-fit: contain;
   border-radius: 4px;
+  opacity: 0;
+  animation: imageAppear 0.3s ease-in-out forwards;
+  animation-delay: 0.1s;
+}
+
+@keyframes imageAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .modalClose {
