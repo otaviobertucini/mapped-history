@@ -1,21 +1,52 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import Map, { Source, Layer, Marker, MapLayerMouseEvent, MapGeoJSONFeature, MapRef } from 'react-map-gl/maplibre';
-import 'maplibre-gl/dist/maplibre-gl.css';
-import './globals.css';
+import Map, { Source, Layer, Marker, MapLayerMouseEvent, MapRef } from 'react-map-gl/maplibre';
 import { neighborhoodInfo } from './neighborhoodInfo';
 import { sitesInfo, SiteInfo } from './sitesInfo';
 import InfoCard, { InfoCardContent } from './InfoCard';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import './globals.css';
+
+export type Coordinate = [number, number];
+
+export type Polygon = {
+  type: 'Polygon';
+  coordinates: Coordinate[][];
+};
+
+export interface NeighborhoodProperties {
+  '@id': string;
+  admin_level?: string;
+  boundary?: string;
+  name: string;
+  type?: string;
+  source?: string;
+}
+
+export interface NeighborhoodFeature {
+  type: 'Feature';
+  properties: NeighborhoodProperties;
+  geometry: Polygon;
+  id: string;
+}
+
+export interface GeoJSON {
+  type: 'FeatureCollection';
+  generator?: string;
+  copyright?: string;
+  timestamp?: string;
+  features: NeighborhoodFeature[];
+}
 
 interface HomeProps {
-  geoJsonData: any;
+  geoJsonData: GeoJSON;
 }
 
 export default function Home({ geoJsonData }: HomeProps) {
   const [popupInfo, setPopupInfo] = useState<InfoCardContent | null>(null);
   const [selectedSite, setSelectedSite] = useState<InfoCardContent | null>(null);
-  const [selectedNeighborhood, setSelectedNeighborhood] = useState<MapGeoJSONFeature | null>(null);
+  const [selectedNeighborhoodId, setSelectedNeighborhoodId] = useState<string | null>(null);
   const [hoveredSite, setHoveredSite] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -89,7 +120,7 @@ export default function Home({ geoJsonData }: HomeProps) {
     if (clickedFeature) {
       const neighborhoodName = clickedFeature.properties.name;
       const info = neighborhoodInfo[neighborhoodName] || {};
-      setSelectedNeighborhood(clickedFeature);
+      setSelectedNeighborhoodId(clickedFeature.properties['@id']);
       setPopupInfo({
         name: neighborhoodName,
         description: info.description,
@@ -109,14 +140,14 @@ export default function Home({ geoJsonData }: HomeProps) {
     event.stopPropagation();
     setSelectedSite({ ...site, type: 'SITE' });
     setPopupInfo(null);
-    setSelectedNeighborhood(null);
+    setSelectedNeighborhoodId(null);
     centerMapOn(site.coordinates);
   };
 
   const closeInfoCard = () => {
     setPopupInfo(null);
     setSelectedSite(null);
-    setSelectedNeighborhood(null);
+    setSelectedNeighborhoodId(null);
   };
 
   return (
@@ -136,12 +167,12 @@ export default function Home({ geoJsonData }: HomeProps) {
           <Source id='neighborhoods' type='geojson' data={geoJsonData}>
             <Layer id='neighborhoods-layer' type='fill' paint={{ 'fill-color': '#0080ff', 'fill-opacity': 0.5 }} />
             <Layer id='neighborhoods-borders' type='line' paint={{ 'line-color': '#000000', 'line-width': 2 }} />
-            {selectedNeighborhood && (
+            {selectedNeighborhoodId && (
               <Layer
                 id='hovered-feature'
                 type='fill'
                 source='neighborhoods'
-                filter={['==', '@id', selectedNeighborhood?.properties['@id']]}
+                filter={['==', '@id', selectedNeighborhoodId]}
                 paint={{
                   'fill-opacity': 0.5,
                 }}
