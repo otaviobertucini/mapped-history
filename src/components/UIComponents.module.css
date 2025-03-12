@@ -1,0 +1,310 @@
+/* Common Variables */
+:root {
+  --primary-color: #3a86ff;
+  --primary-hover: #1a66ff;
+  --light-bg: #ffffff;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --shadow-hover: rgba(0, 0, 0, 0.15);
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --border-radius: 12px;
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --box-shadow: 0 4px 16px var(--shadow-color);
+  --box-shadow-hover: 0 8px 24px var(--shadow-hover);
+}
+
+/* Search Component Styles */
+.searchContainer {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  z-index: 10;
+}
+
+.inputWrapper {
+  display: flex;
+  width: 100%;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+  transition: var(--transition);
+}
+
+.inputWrapper:hover {
+  box-shadow: var(--box-shadow-hover);
+}
+
+.searchInput {
+  flex-grow: 1;
+  height: 48px;
+  padding: 0 16px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  background-color: var(--light-bg);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+.searchButton {
+  width: 64px;
+  height: 48px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+.searchButton:hover {
+  background-color: var(--primary-hover);
+}
+
+.suggestionsList {
+  list-style-type: none;
+  margin: 4px 0 0 0;
+  padding: 0;
+  background-color: var(--light-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  max-height: 200px;
+  overflow-y: auto;
+  transition: var(--transition);
+}
+
+.suggestionItem {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  color: var(--text-primary);
+}
+
+.suggestionItem:hover {
+  background-color: rgba(58, 134, 255, 0.05);
+}
+
+/* InfoCard Styles */
+.infoCard {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 320px;
+  background-color: var(--light-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  z-index: 10;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  background: var(--light-bg);
+  z-index: 20;
+  padding: 16px 16px 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.content {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(70vh - 180px);
+  padding: 16px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+.title {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+.closeButton {
+  position: absolute !important;
+  top: 12px;
+  right: 12px;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-radius: 50%;
+  transition: var(--transition);
+}
+
+.closeButton:hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Gallery Styles */
+.gallery {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  margin: 12px 0;
+  position: relative;
+  height: 90px;
+}
+
+.galleryImageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex: 1;
+  margin: 0 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.imageWrapper {
+  position: relative;
+  transition: var(--transition);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.galleryImage {
+  width: 70px;
+  height: 52px;
+  object-fit: cover;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.currentImage {
+  z-index: 2;
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.prevImage, .nextImage {
+  opacity: 0.7;
+  transform: scale(0.85);
+}
+
+.galleryArrow {
+  background: rgba(0, 0, 0, 0.05) !important;
+  width: 32px !important;
+  height: 32px !important;
+  z-index: 3;
+  transition: var(--transition);
+}
+
+.galleryArrow:disabled {
+  background: rgba(0, 0, 0, 0.02) !important;
+  cursor: default;
+}
+
+.galleryArrow:not(:disabled):hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Modal Styles */
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+  animation: modalBackdropFade 0.3s ease-in-out;
+}
+
+.modalContent {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  background: transparent;
+  outline: none;
+  animation: modalContentZoom 0.3s ease-in-out;
+}
+
+.modalImage {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  border-radius: 8px;
+  opacity: 0;
+  animation: imageAppear 0.3s ease-in-out forwards;
+  animation-delay: 0.1s;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+}
+
+.modalClose {
+  position: absolute !important;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: white !important;
+  backdrop-filter: blur(4px);
+  transition: var(--transition);
+}
+
+.modalClose:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Map Popup Styles */
+.mapPopup {
+  background-color: var(--light-bg);
+  padding: 8px 12px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 14px;
+  color: var(--text-primary);
+  max-width: 160px;
+  transition: var(--transition);
+  z-index: 1;
+}
+
+.mapPopupActive {
+  transform: scale(1.05);
+  box-shadow: var(--box-shadow-hover);
+  z-index: 2;
+}
+
+/* Animations */
+@keyframes modalBackdropFade {
+  from { background: rgba(0, 0, 0, 0); }
+  to { background: rgba(0, 0, 0, 0.85); }
+}
+
+@keyframes modalContentZoom {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes imageAppear {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .searchContainer {
+    width: 80%;
+  }
+
+  .infoCard {
+    width: auto;
+    left: 0;
+    right: 0;
+    margin: 12px;
+    top: 80px;
+    max-height: 60vh;
+    border-radius: var(--border-radius);
+  }
+}

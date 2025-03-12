@@ -8,6 +8,7 @@ import InfoCard, { InfoCardContent } from './InfoCard';
 import SearchBar from './SearchBar';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './globals.css';
+import styles from './UIComponents.module.css';
 
 export type Coordinate = [number, number];
 
@@ -218,8 +219,8 @@ export default function Home({ geoJsonData }: HomeProps) {
             </div>
             {currentZoom >= ZOOM_THRESHOLD && (
               <div
-                className={`custom-popup ${
-                  hoveredSite === site.name || selectedSite?.name === site.name ? 'custom-popup-active' : ''
+                className={`${styles.mapPopup} ${
+                  hoveredSite === site.name || selectedSite?.name === site.name ? styles.mapPopupActive : ''
                 }`}
                 onMouseEnter={() => setHoveredSite(site.name)}
                 onMouseLeave={() => setHoveredSite(null)}

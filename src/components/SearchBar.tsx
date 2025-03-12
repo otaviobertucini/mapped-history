@@ -2,127 +2,113 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { GeoJSON } from './MapComponent';
-import styles from './SearchBar.module.css';
+import styles from './UIComponents.module.css';
 
 interface SearchBarProps {
   geoJsonData: GeoJSON;
   onSelectNeighborhood: (neighborhoodId: string, coordinates: [number, number]) => void;
 }
 
-const normalizeText = (text: string): string => {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
-};
-
 export default function SearchBar({ geoJsonData, onSelectNeighborhood }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [suggestions, setSuggestions] = useState<Array<{ id: string; name: string; coordinates: [number, number] }>>(
-    []
-  );
-  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [suggestions, setSuggestions] = useState<Array<{id: string; name: string; center: [number, number]}>>([]); 
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
+  // Handle click outside to close suggestions
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-        setIsSuggestionsOpen(false);
+    function handleClickOutside(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
       }
-    };
+    }
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Update suggestions when search term changes
   useEffect(() => {
-    if (!geoJsonData || !geoJsonData.features) return;
-
-    if (searchTerm.trim() === '') {
+    if (!geoJsonData || !geoJsonData.features || searchTerm.trim() === '') {
       setSuggestions([]);
       return;
     }
 
-    const normalizedSearchTerm = normalizeText(searchTerm);
-
     const filteredSuggestions = geoJsonData.features
-      .filter((feature) => feature.geometry.type === 'Polygon')
-      .filter((feature) => {
-        const normalizedName = normalizeText(feature.properties.name);
-        return normalizedName.includes(normalizedSearchTerm);
-      })
-      .map((feature) => {
+      .filter(feature => 
+        feature.properties.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .map(feature => {
+        // Calculate center point of the neighborhood
         const coordinates = feature.geometry.coordinates[0];
-        let sumLng = 0,
-          sumLat = 0;
-
-        coordinates.forEach((coord) => {
-          sumLng += coord[0];
-          sumLat += coord[1];
-        });
-
-        const center: [number, number] = [sumLng / coordinates.length, sumLat / coordinates.length];
-
+        const lng = coordinates.reduce((sum, point) => sum + point[0], 0) / coordinates.length;
+        const lat = coordinates.reduce((sum, point) => sum + point[1], 0) / coordinates.length;
+        
         return {
           id: feature.properties['@id'],
           name: feature.properties.name,
-          coordinates: center,
+          center: [lng, lat] as [number, number]
         };
-      });
+      })
+      .slice(0, 5); // Limit to 5 suggestions
 
     setSuggestions(filteredSuggestions);
   }, [searchTerm, geoJsonData]);
 
   const handleSearch = () => {
-    if (searchTerm.trim() === '' || !suggestions.length) return;
-
-    const normalizedSearchTerm = normalizeText(searchTerm);
+    if (searchTerm.trim() === '') return;
     
-    const match = suggestions.find((s) => normalizeText(s.name) === normalizedSearchTerm) || suggestions[0];
-    if (match) {
-      onSelectNeighborhood(match.id, match.coordinates);
-      setIsSuggestionsOpen(false);
-      setSearchTerm('');
+    const suggestion = suggestions.find(s => 
+      s.name.toLowerCase() === searchTerm.toLowerCase()
+    ) || suggestions[0];
+    
+    if (suggestion) {
+      onSelectNeighborhood(suggestion.id, suggestion.center);
+      setShowSuggestions(false);
     }
   };
 
-  const handleSuggestionClick = (id: string, name: string, coordinates: [number, number]) => {
+  const handleSuggestionClick = (id: string, name: string, center: [number, number]) => {
     setSearchTerm(name);
-    onSelectNeighborhood(id, coordinates);
-    setIsSuggestionsOpen(false);
-    setSearchTerm('');
+    onSelectNeighborhood(id, center);
+    setShowSuggestions(false);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
       handleSearch();
     }
   };
 
   return (
-    <div className={styles.container} ref={wrapperRef}>
-      <div className={styles.searchBar}>
+    <div className={styles.searchContainer} ref={searchRef}>
+      <div className={styles.inputWrapper}>
         <input
-          type='text'
-          placeholder='Buscar bairro...'
+          type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          onFocus={() => setIsSuggestionsOpen(true)}
           onKeyDown={handleKeyDown}
-          className={styles.input}
-          aria-label='Buscar bairros'
+          onFocus={() => setShowSuggestions(true)}
+          placeholder="Search neighborhoods..."
+          className={styles.searchInput}
+          aria-label="Search neighborhoods"
         />
-        <button onClick={handleSearch} className={styles.button}>
-          Ir
+        <button 
+          onClick={handleSearch}
+          className={styles.searchButton}
+          aria-label="Go to neighborhood"
+        >
+          Go
         </button>
       </div>
-
-      {isSuggestionsOpen && suggestions.length > 0 && (
-        <ul className={styles.suggestions}>
+      
+      {showSuggestions && suggestions.length > 0 && (
+        <ul className={styles.suggestionsList}>
           {suggestions.map((suggestion) => (
             <li
               key={suggestion.id}
-              onClick={() => handleSuggestionClick(suggestion.id, suggestion.name, suggestion.coordinates)}
+              onClick={() => handleSuggestionClick(suggestion.id, suggestion.name, suggestion.center)}
+              className={styles.suggestionItem}
             >
               {suggestion.name}
             </li>

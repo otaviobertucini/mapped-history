@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid2';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import styles from './InfoCard.module.css';
+import styles from './UIComponents.module.css';
 
 export interface InfoCardContent {
   name: string;
