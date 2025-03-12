@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, Typography, IconButton, Modal, Box } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import CloseIcon from '@mui/icons-material/Close';
@@ -24,8 +24,41 @@ interface InfoCardProps {
 const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
+  const [isRendered, setIsRendered] = useState(false);
+  const exitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Apply slight delay before showing the card to ensure smooth animation
+  useEffect(() => {
+    if (info) {
+      setTimeout(() => {
+        setIsRendered(true);
+      }, 10);
+      
+      setIsExiting(false);
+      // Reset the current image index for new content
+      setCurrentImageIndex(0);
+      
+      // Clear any pending exit animations
+      if (exitTimeoutRef.current) {
+        clearTimeout(exitTimeoutRef.current);
+        exitTimeoutRef.current = null;
+      }
+    } else {
+      setIsRendered(false);
+    }
+  }, [info]);
+
+  // Don't render anything if no info
   if (!info) return null;
+  
+  // Don't apply animation styles until we're ready to render
+  // This prevents the initial flickering
+  if (!isRendered) {
+    return (
+      <div style={{ position: 'absolute', opacity: 0 }} aria-hidden="true"></div>
+    );
+  }
 
   const handlePrevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -42,8 +75,26 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
     setModalOpen(true);
   };
 
+  const handleClose = () => {
+    // Start exit animation
+    setIsExiting(true);
+    
+    // Clear any existing timeout
+    if (exitTimeoutRef.current) {
+      clearTimeout(exitTimeoutRef.current);
+    }
+    
+    // Wait for animation to complete before actually closing
+    exitTimeoutRef.current = setTimeout(() => {
+      onClose();
+      exitTimeoutRef.current = null;
+    }, 300); // Match this with the CSS animation duration
+  };
+
   return (
-    <Card className={styles.infoCard}>
+    <Card 
+      className={`${styles.infoCard} ${isExiting ? styles.infoCardExit : ''}`}
+    >
       <CardContent style={{ paddingBottom: '8px' }}>
         <div className={styles.header}>
           <Grid container spacing={1} alignItems='center'>
@@ -53,7 +104,12 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
               </Typography>
             </Grid>
             <Grid size={1} sx={{ textAlign: 'right' }}>
-              <IconButton aria-label='close' onClick={onClose} className={styles.closeButton} size='small'>
+              <IconButton 
+                aria-label='close' 
+                onClick={handleClose} 
+                className={styles.closeButton} 
+                size='small'
+              >
                 <CloseIcon fontSize='small' />
               </IconButton>
             </Grid>

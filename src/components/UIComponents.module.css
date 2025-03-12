@@ -90,6 +90,33 @@
 }
 
 /* InfoCard Styles */
+@keyframes cardAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(-15px) translateX(-15px) scale(0.98);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) translateX(0) scale(1);
+    box-shadow: var(--box-shadow);
+  }
+}
+
+/* Update the exit animation to be smoother */
+@keyframes cardDisappear {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: var(--box-shadow);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.98) translateY(-12px) translateX(-12px);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
 .infoCard {
   position: absolute;
   top: 20px;
@@ -103,7 +130,17 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: var(--transition);
+  will-change: transform, opacity, box-shadow;
+  transform: translate3d(0, 0, 0); /* Force hardware acceleration */
+  backface-visibility: hidden; /* Prevent flickering in some browsers */
+  perspective: 1000px; /* Enhance 3D effect handling */
+  animation: cardAppear 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.0) forwards;
+}
+
+.infoCardExit {
+  pointer-events: none;
+  will-change: transform, opacity, box-shadow;
+  animation: cardDisappear 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.0) forwards;
 }
 
 .header {
@@ -123,6 +160,7 @@
   color: var(--text-primary);
   line-height: 1.6;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .title {
@@ -145,6 +183,7 @@
 
 .closeButton:hover {
   background: rgba(0, 0, 0, 0.1) !important;
+  transform: scale(1.1);
 }
 
 /* Gallery Styles */
@@ -156,6 +195,7 @@
   margin: 12px 0;
   position: relative;
   height: 90px;
+  animation: slideUpFade 0.6s ease-in-out;
 }
 
 .galleryImageContainer {
@@ -268,6 +308,7 @@
   max-width: 160px;
   transition: var(--transition);
   z-index: 1;
+  animation: popupAppear 0.3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
 }
 
 .mapPopupActive {
@@ -292,6 +333,22 @@
   to { opacity: 1; transform: scale(1); }
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popupAppear {
+  0% { transform: scale(0.8); opacity: 0; }
+  70% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
   .searchContainer {
@@ -306,5 +363,33 @@
     top: 80px;
     max-height: 60vh;
     border-radius: var(--border-radius);
+    will-change: transform, opacity;
+    animation: mobileCardAppear 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.0) forwards;
+  }
+  
+  @keyframes mobileCardAppear {
+    0% {
+      opacity: 0;
+      transform: translateY(-30px) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes mobileCardDisappear {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.97);
+    }
+  }
+
+  .infoCardExit {
+    animation: mobileCardDisappear 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.0) forwards;
   }
 }
