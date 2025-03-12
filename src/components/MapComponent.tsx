@@ -5,6 +5,7 @@ import Map, { Source, Layer, Marker, MapLayerMouseEvent, MapRef } from 'react-ma
 import { neighborhoodInfo } from './neighborhoodInfo';
 import { sitesInfo, SiteInfo } from './sitesInfo';
 import InfoCard, { InfoCardContent } from './InfoCard';
+import SearchBar from './SearchBar';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './globals.css';
 
@@ -144,6 +145,31 @@ export default function Home({ geoJsonData }: HomeProps) {
     centerMapOn(site.coordinates);
   };
 
+  const handleSearchSelection = (neighborhoodId: string, coordinates: [number, number]) => {
+    // Find the selected neighborhood in the geoJsonData
+    const selectedFeature = geoJsonData.features.find(
+      feature => feature.properties['@id'] === neighborhoodId
+    );
+    
+    if (selectedFeature) {
+      const neighborhoodName = selectedFeature.properties.name;
+      const info = neighborhoodInfo[neighborhoodName] || {};
+      
+      setSelectedNeighborhoodId(neighborhoodId);
+      setSelectedSite(null);
+      setPopupInfo({
+        name: neighborhoodName,
+        description: info.description,
+        dateOfFounding: info.dateOfFounding,
+        images: info.images,
+        pointsOfInterest: info.pointsOfInterest,
+        type: 'NEIGHBORHOOD',
+      });
+      
+      centerMapOn(coordinates);
+    }
+  };
+
   const closeInfoCard = () => {
     setPopupInfo(null);
     setSelectedSite(null);
@@ -152,6 +178,11 @@ export default function Home({ geoJsonData }: HomeProps) {
 
   return (
     <div className='relative' style={{ width: '100vw', height: '100vh' }}>
+      <SearchBar 
+        geoJsonData={geoJsonData} 
+        onSelectNeighborhood={handleSearchSelection} 
+      />
+      
       <Map
         ref={mapRef}
         style={{ width: '100%', height: '100%', cursor: 'pointer' }}
