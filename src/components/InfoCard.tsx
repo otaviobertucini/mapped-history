@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, Typography, IconButton, Modal, Box } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import CloseIcon from '@mui/icons-material/Close';
@@ -24,41 +24,33 @@ interface InfoCardProps {
 const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
-  const [isRendered, setIsRendered] = useState(false);
-  const exitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Apply slight delay before showing the card to ensure smooth animation
+  const [animationClass, setAnimationClass] = useState('');
+  const isFirstRender = useRef(true);
+  
   useEffect(() => {
+    // Only apply animations after component has fully mounted
+    if (info && isFirstRender.current) {
+      // On first render, delay the animation class to avoid flickering
+      isFirstRender.current = false;
+      // Immediate render without animation class
+      setAnimationClass('');
+      
+      // Then add animation class after a very short delay
+      requestAnimationFrame(() => {
+        setAnimationClass(styles.infoCardVisible);
+      });
+    } else if (info) {
+      // For subsequent updates (new info)
+      setAnimationClass(styles.infoCardVisible);
+    }
+    
+    // Reset image index when new info comes in
     if (info) {
-      setTimeout(() => {
-        setIsRendered(true);
-      }, 10);
-      
-      setIsExiting(false);
-      // Reset the current image index for new content
       setCurrentImageIndex(0);
-      
-      // Clear any pending exit animations
-      if (exitTimeoutRef.current) {
-        clearTimeout(exitTimeoutRef.current);
-        exitTimeoutRef.current = null;
-      }
-    } else {
-      setIsRendered(false);
     }
   }, [info]);
-
-  // Don't render anything if no info
-  if (!info) return null;
   
-  // Don't apply animation styles until we're ready to render
-  // This prevents the initial flickering
-  if (!isRendered) {
-    return (
-      <div style={{ position: 'absolute', opacity: 0 }} aria-hidden="true"></div>
-    );
-  }
+  if (!info) return null;
 
   const handlePrevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -76,24 +68,18 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
   };
 
   const handleClose = () => {
-    // Start exit animation
-    setIsExiting(true);
+    setAnimationClass(styles.infoCardExit);
     
-    // Clear any existing timeout
-    if (exitTimeoutRef.current) {
-      clearTimeout(exitTimeoutRef.current);
-    }
-    
-    // Wait for animation to complete before actually closing
-    exitTimeoutRef.current = setTimeout(() => {
+    // Let the CSS animation play before actually removing the component
+    const card = document.querySelector(`.${styles.infoCard}`);
+    card?.addEventListener('animationend', () => {
       onClose();
-      exitTimeoutRef.current = null;
-    }, 300); // Match this with the CSS animation duration
+    }, { once: true });
   };
 
   return (
     <Card 
-      className={`${styles.infoCard} ${isExiting ? styles.infoCardExit : ''}`}
+      className={`${styles.infoCard} ${animationClass}`}
     >
       <CardContent style={{ paddingBottom: '8px' }}>
         <div className={styles.header}>

@@ -117,6 +117,8 @@
   }
 }
 
+/* InfoCard animation specific updates */
+
 .infoCard {
   position: absolute;
   top: 20px;
@@ -130,17 +132,26 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  will-change: transform, opacity, box-shadow;
-  transform: translate3d(0, 0, 0); /* Force hardware acceleration */
-  backface-visibility: hidden; /* Prevent flickering in some browsers */
-  perspective: 1000px; /* Enhance 3D effect handling */
-  animation: cardAppear 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.0) forwards;
+  opacity: 0; /* Start invisible */
+  transform: translate3d(0, -15px, 0) scale(0.98);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transition: none; /* Don't animate initially */
+}
+
+.infoCardVisible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  transition: opacity 350ms cubic-bezier(0.2, 0.9, 0.3, 1.0), 
+              transform 350ms cubic-bezier(0.2, 0.9, 0.3, 1.0);
 }
 
 .infoCardExit {
+  opacity: 0;
+  transform: translate3d(-15px, -15px, 0) scale(0.98);
+  transition: opacity 300ms cubic-bezier(0.2, 0.9, 0.3, 1.0), 
+              transform 300ms cubic-bezier(0.2, 0.9, 0.3, 1.0);
   pointer-events: none;
-  will-change: transform, opacity, box-shadow;
-  animation: cardDisappear 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.0) forwards;
 }
 
 .header {
@@ -362,34 +373,14 @@
     margin: 12px;
     top: 80px;
     max-height: 60vh;
-    border-radius: var(--border-radius);
-    will-change: transform, opacity;
-    animation: mobileCardAppear 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.0) forwards;
+    transform: translate3d(0, -30px, 0) scale(0.98);
   }
   
-  @keyframes mobileCardAppear {
-    0% {
-      opacity: 0;
-      transform: translateY(-30px) scale(0.98);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
+  .infoCardVisible {
+    transform: translate3d(0, 0, 0) scale(1);
   }
-
-  @keyframes mobileCardDisappear {
-    0% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(-20px) scale(0.97);
-    }
-  }
-
+  
   .infoCardExit {
-    animation: mobileCardDisappear 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.0) forwards;
+    transform: translate3d(0, -20px, 0) scale(0.97);
   }
 }
