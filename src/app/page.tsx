@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import MapComponent from '../components/MapComponent';
+import './global.css';
 
 // const MapComponent = dynamic(() => import('@/components/MapComponent'), { ssr: false });
 
