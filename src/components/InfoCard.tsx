@@ -70,11 +70,11 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
   const handleClose = () => {
     setAnimationClass(styles.infoCardExit);
     
-    // Let the CSS animation play before actually removing the component
-    const card = document.querySelector(`.${styles.infoCard}`);
-    card?.addEventListener('animationend', () => {
-      onClose();
-    }, { once: true });
+    // // Let the CSS animation play before actually removing the component
+    // const card = document.querySelector(`.${styles.infoCard}`);
+    // card?.addEventListener('animationend', () => {
+    // }, { once: true });
+    onClose();
   };
 
   return (

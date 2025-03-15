@@ -181,7 +181,9 @@ export default function Home({ geoJsonData }: HomeProps) {
     <div className='relative' style={{ width: '100vw', height: '100vh' }}>
       <SearchBar 
         geoJsonData={geoJsonData} 
-        onSelectNeighborhood={handleSearchSelection} 
+        onSelectNeighborhood={handleSearchSelection}
+        isVisible={true}
+        // isVisible={!popupInfo && !selectedSite}
       />
       
       <Map

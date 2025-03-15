@@ -7,9 +7,10 @@ import styles from './UIComponents.module.css';
 interface SearchBarProps {
   geoJsonData: GeoJSON;
   onSelectNeighborhood: (neighborhoodId: string, coordinates: [number, number]) => void;
+  isVisible: boolean;
 }
 
-export default function SearchBar({ geoJsonData, onSelectNeighborhood }: SearchBarProps) {
+export default function SearchBar({ geoJsonData, onSelectNeighborhood, isVisible }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState<Array<{id: string; name: string; center: [number, number]}>>([]); 
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -35,6 +36,7 @@ export default function SearchBar({ geoJsonData, onSelectNeighborhood }: SearchB
     }
 
     const filteredSuggestions = geoJsonData.features
+      .filter(feature => feature.geometry.type === 'Polygon')
       .filter(feature => 
         feature.properties.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
@@ -81,7 +83,7 @@ export default function SearchBar({ geoJsonData, onSelectNeighborhood }: SearchB
   };
 
   return (
-    <div className={styles.searchContainer} ref={searchRef}>
+    <div className={`${styles.searchContainer} ${!isVisible ? styles.searchHidden : ''}`} ref={searchRef}>
       <div className={styles.inputWrapper}>
         <input
           type="text"

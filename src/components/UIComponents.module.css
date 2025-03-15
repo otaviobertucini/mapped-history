@@ -1,4 +1,3 @@
-/* Search Component Styles */
 .searchContainer {
   position: absolute;
   top: 20px;
@@ -7,6 +6,14 @@
   width: 90%;
   max-width: 400px;
   z-index: 10;
+  opacity: 1;
+  transition: opacity 0.2s ease-out;
+}
+
+.searchHidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .inputWrapper {
@@ -74,7 +81,6 @@
   background-color: rgba(58, 134, 255, 0.05);
 }
 
-/* InfoCard Styles */
 @keyframes cardAppear {
   0% {
     opacity: 0;
@@ -88,7 +94,6 @@
   }
 }
 
-/* Update the exit animation to be smoother */
 @keyframes cardDisappear {
   0% {
     opacity: 1;
@@ -102,11 +107,10 @@
   }
 }
 
-/* InfoCard animation specific updates */
 
 .infoCard {
   position: absolute;
-  top: 20px;
+  top: 8px;
   left: 20px;
   width: 320px;
   background-color: var(--light-bg);
@@ -117,25 +121,21 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  opacity: 0; /* Start invisible */
-  transform: translate3d(0, -15px, 0) scale(0.98);
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  transition: none; /* Don't animate initially */
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .infoCardVisible {
   opacity: 1;
-  transform: translate3d(0, 0, 0) scale(1);
-  transition: opacity 350ms cubic-bezier(0.2, 0.9, 0.3, 1.0), 
-              transform 350ms cubic-bezier(0.2, 0.9, 0.3, 1.0);
+  transform: translateY(0);
 }
 
 .infoCardExit {
   opacity: 0;
-  transform: translate3d(-15px, -15px, 0) scale(0.98);
-  transition: opacity 300ms cubic-bezier(0.2, 0.9, 0.3, 1.0), 
-              transform 300ms cubic-bezier(0.2, 0.9, 0.3, 1.0);
+  transform: translate3d(0, 0, 0) scale(0.98);
+  transition: opacity 500ms cubic-bezier(0.2, 0.9, 0.3, 1.0), 
+              transform 500ms cubic-bezier(0.2, 0.9, 0.3, 1.0);
   pointer-events: none;
 }
 
@@ -182,7 +182,6 @@
   transform: scale(1.1);
 }
 
-/* Gallery Styles */
 .gallery {
   display: flex;
   align-items: center;
@@ -248,7 +247,6 @@
   background: rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Modal Styles */
 .modal {
   display: flex;
   align-items: center;
@@ -292,7 +290,6 @@
   background: rgba(255, 255, 255, 0.25) !important;
 }
 
-/* Map Popup Styles */
 .mapPopup {
   background-color: var(--light-bg);
   padding: 8px 12px;
@@ -313,7 +310,6 @@
   z-index: 2;
 }
 
-/* Animations */
 @keyframes modalBackdropFade {
   from { background: rgba(0, 0, 0, 0); }
   to { background: rgba(0, 0, 0, 0.85); }
@@ -345,10 +341,11 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Responsive styles */
 @media (max-width: 768px) {
   .searchContainer {
-    width: 80%;
+    width: 90%;
+    max-width: none;
+    margin: 0 auto;
   }
 
   .infoCard {
@@ -356,7 +353,6 @@
     left: 0;
     right: 0;
     margin: 12px;
-    top: 80px;
     max-height: 60vh;
     transform: translate3d(0, -30px, 0) scale(0.98);
   }
