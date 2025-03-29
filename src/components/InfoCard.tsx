@@ -80,7 +80,7 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose, onSiteSelect, onGoBa
   return (
     <Card className={`${styles.infoCard} ${animationClass}`}>
       <CardContent style={{ paddingBottom: '8px' }}>
-        {/* Back button as simple text link */}
+        {}
         {info.parentInfo && (
           <div 
             className={styles.backLink} 
@@ -91,7 +91,7 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose, onSiteSelect, onGoBa
               textDecoration: 'none'
             }}
           >
-            ← Back
+            ← Voltar
           </div>
         )}
         
@@ -170,7 +170,7 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose, onSiteSelect, onGoBa
           {}
           {info.pointsOfInterest && info.pointsOfInterest.length > 0 && (
             <div className={styles.poiSection}>
-              <Typography variant='body2' sx={{ fontWeight: 'medium', marginBottom: '6px' }}>
+              <Typography variant='body2' sx={{ marginBottom: '6px' }}>
                 Pontos de interesse:
               </Typography>
               <ul className={styles.poiList}>
