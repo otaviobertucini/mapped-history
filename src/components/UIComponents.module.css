@@ -333,17 +333,17 @@
 }
 
 .poiSection {
-  margin: 8px 0;
+  margin: 12px 0;
 }
 
 .poiList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 4px;
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 0;
 }
 
 .poiItem {
+  margin-bottom: 4px;
   background-color: var(--light-accent);
   color: var(--text-primary);
   padding: 4px 8px;
@@ -358,6 +358,38 @@
   color: white;
   transform: translateY(-2px);
   box-shadow: var(--box-shadow);
+}
+
+.poiLink {
+  color: var(--primary-color, #3a86ff);
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.poiLink:hover {
+  color: var(--primary-color-dark, #1d62cf);
+  text-decoration: underline;
+}
+
+.poiLink:focus {
+  outline: none;
+  text-decoration: underline;
+}
+
+.poiLink:active {
+  color: var(--primary-color-darker, #0f4aa8);
+}
+
+.backButton {
+  color: var(--text-primary);
+  transition: all 0.2s ease-in-out;
+}
+
+.backButton:hover {
+  color: var(--primary-color);
+  transform: translateX(-2px);
 }
 
 @keyframes modalBackdropFade {

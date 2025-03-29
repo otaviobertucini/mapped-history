@@ -15,15 +15,17 @@ export interface InfoCardContent {
   pointsOfInterest?: PointOfInterest[];
   images?: string[];
   type: 'SITE' | 'NEIGHBORHOOD';
+  parentInfo?: InfoCardContent;
 }
 
 interface InfoCardProps {
   info: InfoCardContent | null;
   onClose: () => void;
   onSiteSelect?: (siteId: string) => void;
+  onGoBack?: () => void;
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({ info, onClose, onSiteSelect }) => {
+const InfoCard: React.FC<InfoCardProps> = ({ info, onClose, onSiteSelect, onGoBack }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [animationClass, setAnimationClass] = useState('');
@@ -78,6 +80,13 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose, onSiteSelect }) => {
   return (
     <Card className={`${styles.infoCard} ${animationClass}`}>
       <CardContent style={{ paddingBottom: '8px' }}>
+        {/* Back button as simple text link */}
+        {info.parentInfo && (
+          <div className={styles.backLink} onClick={onGoBack}>
+            ← Back
+          </div>
+        )}
+        
         <div className={styles.header}>
           <Grid container spacing={1} alignItems='center'>
             <Grid size={11}>
@@ -153,18 +162,21 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose, onSiteSelect }) => {
           {}
           {info.pointsOfInterest && info.pointsOfInterest.length > 0 && (
             <div className={styles.poiSection}>
-              <Typography variant='body2'>Points of Interest:</Typography>
-              <div className={styles.poiList}>
+              <Typography variant='body2' sx={{ fontWeight: 'medium', marginBottom: '6px' }}>
+                Points of Interest:
+              </Typography>
+              <ul className={styles.poiList}>
                 {info.pointsOfInterest.map((poi) => (
-                  <span 
-                    key={poi.id} 
-                    className={styles.poiItem}
-                    onClick={() => handlePoiClick(poi.id)}
-                  >
-                    {poi.name}
-                  </span>
+                  <li key={poi.id} className={styles.poiItem}>
+                    <span 
+                      className={styles.poiLink}
+                      onClick={() => handlePoiClick(poi.id)}
+                    >
+                      {poi.name}
+                    </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           )}
           <Typography

@@ -184,17 +184,36 @@ export default function Home({ geoJsonData }: HomeProps) {
     
     if (site) {
 
-      setPopupInfo({
+      const newInfo: InfoCardContent = {
         name: site.name,
         description: site.description,
         images: site.images,
-        type: 'SITE'
-      })
+        type: 'SITE',
+        parentInfo: popupInfo || undefined
+      };
       
+      setPopupInfo(newInfo);
       setSelectedNeighborhoodId(null);
       setSelectedSiteId(site.id);
       
       centerMapOn(site.coordinates);
+    }
+  };
+
+  const handleGoBack = () => {
+    if (popupInfo?.parentInfo) {
+      setPopupInfo(popupInfo.parentInfo);
+      
+      if (popupInfo.parentInfo.type === 'NEIGHBORHOOD') {
+        const neighborhood = Object.entries(neighborhoodInfo).find(
+          ([, info]) => info.name === popupInfo.parentInfo?.name
+        );
+        
+        if (neighborhood) {
+          setSelectedNeighborhoodId(neighborhood[0]);
+          setSelectedSiteId(null);
+        }
+      }
     }
   };
 
@@ -273,6 +292,7 @@ export default function Home({ geoJsonData }: HomeProps) {
         info={popupInfo} 
         onClose={closeInfoCard}
         onSiteSelect={handlePoiSiteSelect}
+        onGoBack={handleGoBack}
       />
     </div>
   );
