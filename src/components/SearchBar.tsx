@@ -112,16 +112,16 @@ export default function SearchBar({ geoJsonData, onSelectNeighborhood, isVisible
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => setShowSuggestions(true)}
-          placeholder="Search neighborhoods..."
+          placeholder="Pesquisar bairros..."
           className={styles.searchInput}
-          aria-label="Search neighborhoods"
+          aria-label="Pesquisar bairros"
         />
         <button 
           onClick={handleSearch}
           className={styles.searchButton}
-          aria-label="Go to neighborhood"
+          aria-label="Ir para o bairro"
         >
-          Go
+          Ir
         </button>
       </div>
       
