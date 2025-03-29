@@ -47,14 +47,14 @@ interface HomeProps {
 
 export default function Home({ geoJsonData }: HomeProps) {
   const [popupInfo, setPopupInfo] = useState<InfoCardContent | null>(null);
-  const [selectedSite, setSelectedSite] = useState<InfoCardContent | null>(null);
+  const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
   const [selectedNeighborhoodId, setSelectedNeighborhoodId] = useState<string | null>(null);
   const [hoveredSite, setHoveredSite] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
   const [currentZoom, setCurrentZoom] = useState<number>(12);
 
-  const ZOOM_THRESHOLD = 13;
+  const POPUP_ZOOM_THRESHOLD = 13;
 
   const mapRef = useRef<MapRef>(null);
 
@@ -97,7 +97,7 @@ export default function Home({ geoJsonData }: HomeProps) {
       mapRef.current?.flyTo({
         center: coordinates,
         duration: 1000,
-        zoom: Math.max(currentZoom, ZOOM_THRESHOLD + 1),
+        zoom: Math.max(currentZoom, POPUP_ZOOM_THRESHOLD + 1),
         padding: calculatePadding(),
         essential: true,
       });
@@ -105,15 +105,15 @@ export default function Home({ geoJsonData }: HomeProps) {
       mapRef.current?.flyTo({
         center: coordinates,
         duration: 1000,
-        zoom: Math.max(currentZoom, ZOOM_THRESHOLD),
+        zoom: Math.max(currentZoom, POPUP_ZOOM_THRESHOLD),
         essential: true,
       });
     }
   };
 
   const onNeighborhoodClick = (event: MapLayerMouseEvent) => {
-    if (selectedSite) {
-      setSelectedSite(null);
+    if (selectedSiteId) {
+      setSelectedSiteId(null);
     }
 
     const { features, lngLat } = event;
@@ -140,24 +140,26 @@ export default function Home({ geoJsonData }: HomeProps) {
 
   const onMarkerClick = (event: any, site: SiteInfo) => {
     event.stopPropagation();
-    setSelectedSite({ ...site, type: 'SITE' });
-    setPopupInfo(null);
+    setSelectedSiteId(site.id);
+    setPopupInfo({
+      name: site.name,
+      description: site.description,
+      images: site.images,
+      type: 'SITE',
+    });
     setSelectedNeighborhoodId(null);
     centerMapOn(site.coordinates);
   };
 
   const handleSearchSelection = (neighborhoodId: string, coordinates: [number, number]) => {
-    // Find the selected neighborhood in the geoJsonData
-    const selectedFeature = geoJsonData.features.find(
-      feature => feature.properties['@id'] === neighborhoodId
-    );
-    
+    const selectedFeature = geoJsonData.features.find((feature) => feature.properties['@id'] === neighborhoodId);
+
     if (selectedFeature) {
       const neighborhoodName = selectedFeature.properties.name;
       const info = neighborhoodInfo[neighborhoodName] || {};
-      
+
       setSelectedNeighborhoodId(neighborhoodId);
-      setSelectedSite(null);
+      setSelectedSiteId(null);
       setPopupInfo({
         name: neighborhoodName,
         description: info.description,
@@ -166,26 +168,44 @@ export default function Home({ geoJsonData }: HomeProps) {
         pointsOfInterest: info.pointsOfInterest,
         type: 'NEIGHBORHOOD',
       });
-      
+
       centerMapOn(coordinates);
     }
   };
 
   const closeInfoCard = () => {
     setPopupInfo(null);
-    setSelectedSite(null);
+    setSelectedSiteId(null);
     setSelectedNeighborhoodId(null);
+  };
+
+  const handlePoiSiteSelect = (siteId: string) => {
+    const site = sitesInfo.find(site => site.id === siteId);
+    
+    if (site) {
+
+      setPopupInfo({
+        name: site.name,
+        description: site.description,
+        images: site.images,
+        type: 'SITE'
+      })
+      
+      setSelectedNeighborhoodId(null);
+      setSelectedSiteId(site.id);
+      
+      centerMapOn(site.coordinates);
+    }
   };
 
   return (
     <div className='relative' style={{ width: '100vw', height: '100vh' }}>
-      <SearchBar 
-        geoJsonData={geoJsonData} 
+      <SearchBar
+        geoJsonData={geoJsonData}
         onSelectNeighborhood={handleSearchSelection}
         isVisible={true}
-        // isVisible={!popupInfo && !selectedSite}
       />
-      
+
       <Map
         ref={mapRef}
         style={{ width: '100%', height: '100%', cursor: 'pointer' }}
@@ -196,6 +216,13 @@ export default function Home({ geoJsonData }: HomeProps) {
         onZoom={handleZoomEnd}
         dragRotate={false}
         pitchWithRotate={false}
+        onLoad={() => {
+          if (mapRef.current) {
+            const map = mapRef.current.getMap();
+            map.keyboard.disableRotation();
+            map.touchZoomRotate.disableRotation();
+          }
+        }}
       >
         {geoJsonData && (
           <Source id='neighborhoods' type='geojson' data={geoJsonData}>
@@ -215,27 +242,38 @@ export default function Home({ geoJsonData }: HomeProps) {
           </Source>
         )}
         {sitesInfo.map((site) => (
-          <Marker key={site.name} longitude={site.coordinates[0]} latitude={site.coordinates[1]}>
-            <div onClick={(event) => onMarkerClick(event, site)} style={{ cursor: 'pointer', fontSize: '24px' }}>
-              📍
-            </div>
-            {currentZoom >= ZOOM_THRESHOLD && (
-              <div
-                className={`${styles.mapPopup} ${
-                  hoveredSite === site.name || selectedSite?.name === site.name ? styles.mapPopupActive : ''
-                }`}
-                onMouseEnter={() => setHoveredSite(site.name)}
-                onMouseLeave={() => setHoveredSite(null)}
-                onClick={(event) => onMarkerClick(event, site)}
-              >
-                <div>{site.name}</div>
+          <Marker
+            key={site.name}
+            longitude={site.coordinates[0]}
+            latitude={site.coordinates[1]}
+            anchor='bottom'
+          >
+            <div className={styles.markerContainer}>
+              <div onClick={(event) => onMarkerClick(event, site)} className={styles.pinIcon}>
+                📍
               </div>
-            )}
+              {currentZoom >= POPUP_ZOOM_THRESHOLD && (
+                <div
+                  className={`${styles.mapPopup} ${
+                    hoveredSite === site.name || selectedSiteId === site.id ? styles.mapPopupActive : ''
+                  }`}
+                  onMouseEnter={() => setHoveredSite(site.name)}
+                  onMouseLeave={() => setHoveredSite(null)}
+                  onClick={(event) => onMarkerClick(event, site)}
+                >
+                  <div>{site.name}</div>
+                </div>
+              )}
+            </div>
           </Marker>
         ))}
       </Map>
 
-      <InfoCard info={popupInfo || selectedSite} onClose={closeInfoCard} />
+      <InfoCard 
+        info={popupInfo} 
+        onClose={closeInfoCard}
+        onSiteSelect={handlePoiSiteSelect}
+      />
     </div>
   );
 }

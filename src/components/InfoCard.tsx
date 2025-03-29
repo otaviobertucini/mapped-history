@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, Typography, IconButton, Modal, Box } from '@mui/material';
 import Grid from '@mui/material/Grid2';
@@ -6,12 +5,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import styles from './UIComponents.module.css';
+import { PointOfInterest } from './neighborhoodInfo';
+import dayjs from 'dayjs';
 
 export interface InfoCardContent {
   name: string;
   description: string;
   dateOfFounding?: string;
-  pointsOfInterest?: string[];
+  pointsOfInterest?: PointOfInterest[];
   images?: string[];
   type: 'SITE' | 'NEIGHBORHOOD';
 }
@@ -19,37 +20,32 @@ export interface InfoCardContent {
 interface InfoCardProps {
   info: InfoCardContent | null;
   onClose: () => void;
+  onSiteSelect?: (siteId: string) => void;
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
+const InfoCard: React.FC<InfoCardProps> = ({ info, onClose, onSiteSelect }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [animationClass, setAnimationClass] = useState('');
   const isFirstRender = useRef(true);
-  
+
   useEffect(() => {
-    // Only apply animations after component has fully mounted
     if (info && isFirstRender.current) {
-      // On first render, delay the animation class to avoid flickering
       isFirstRender.current = false;
-      // Immediate render without animation class
       setAnimationClass('');
-      
-      // Then add animation class after a very short delay
+
       requestAnimationFrame(() => {
         setAnimationClass(styles.infoCardVisible);
       });
     } else if (info) {
-      // For subsequent updates (new info)
       setAnimationClass(styles.infoCardVisible);
     }
-    
-    // Reset image index when new info comes in
+
     if (info) {
       setCurrentImageIndex(0);
     }
   }, [info]);
-  
+
   if (!info) return null;
 
   const handlePrevImage = (e: React.MouseEvent) => {
@@ -69,18 +65,18 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
 
   const handleClose = () => {
     setAnimationClass(styles.infoCardExit);
-    
-    // // Let the CSS animation play before actually removing the component
-    // const card = document.querySelector(`.${styles.infoCard}`);
-    // card?.addEventListener('animationend', () => {
-    // }, { once: true });
+
     onClose();
   };
 
+  const handlePoiClick = (poiId: string) => {
+    if (onSiteSelect) {
+      onSiteSelect(poiId);
+    }
+  };
+
   return (
-    <Card 
-      className={`${styles.infoCard} ${animationClass}`}
-    >
+    <Card className={`${styles.infoCard} ${animationClass}`}>
       <CardContent style={{ paddingBottom: '8px' }}>
         <div className={styles.header}>
           <Grid container spacing={1} alignItems='center'>
@@ -90,12 +86,7 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
               </Typography>
             </Grid>
             <Grid size={1} sx={{ textAlign: 'right' }}>
-              <IconButton 
-                aria-label='close' 
-                onClick={handleClose} 
-                className={styles.closeButton} 
-                size='small'
-              >
+              <IconButton aria-label='close' onClick={handleClose} className={styles.closeButton} size='small'>
                 <CloseIcon fontSize='small' />
               </IconButton>
             </Grid>
@@ -156,18 +147,42 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
               </IconButton>
             </div>
           )}
+          {info.dateOfFounding && (
+            <Typography variant='body2'>Fundado em: {dayjs(info.dateOfFounding).format('DD/MM/YYYY')}</Typography>
+          )}
+          {}
+          {info.pointsOfInterest && info.pointsOfInterest.length > 0 && (
+            <div className={styles.poiSection}>
+              <Typography variant='body2'>Points of Interest:</Typography>
+              <div className={styles.poiList}>
+                {info.pointsOfInterest.map((poi) => (
+                  <span 
+                    key={poi.id} 
+                    className={styles.poiItem}
+                    onClick={() => handlePoiClick(poi.id)}
+                  >
+                    {poi.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
           <Typography
             variant='body2'
             sx={{
               overflowWrap: 'anywhere',
+              textAlign: 'justify',
+              whiteSpace: 'pre-line',
+              '& p': {
+                display: 'block',
+                marginBottom: '1em',
+              },
             }}
           >
-            {info.description}
+            {info.description?.split('\n').map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
           </Typography>
-          {info.dateOfFounding && <Typography variant='body2'>Founded: {info.dateOfFounding}</Typography>}
-          {info.pointsOfInterest && (
-            <Typography variant='body2'>Points of Interest: {info.pointsOfInterest.join(', ')}</Typography>
-          )}
         </div>
       </CardContent>
       <Modal
@@ -190,11 +205,7 @@ const InfoCard: React.FC<InfoCardProps> = ({ info, onClose }) => {
             alt={`${info.name} - ${currentImageIndex + 1}`}
             className={styles.modalImage}
           />
-          <IconButton 
-            onClick={() => setModalOpen(false)} 
-            className={styles.modalClose}
-            size='small'
-          >
+          <IconButton onClick={() => setModalOpen(false)} className={styles.modalClose} size='small'>
             <CloseIcon />
           </IconButton>
         </Box>

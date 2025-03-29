@@ -16,7 +16,6 @@ export default function SearchBar({ geoJsonData, onSelectNeighborhood, isVisible
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // Handle click outside to close suggestions
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -28,7 +27,6 @@ export default function SearchBar({ geoJsonData, onSelectNeighborhood, isVisible
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Update suggestions when search term changes
   useEffect(() => {
     if (!geoJsonData || !geoJsonData.features || searchTerm.trim() === '') {
       setSuggestions([]);
@@ -41,7 +39,6 @@ export default function SearchBar({ geoJsonData, onSelectNeighborhood, isVisible
         feature.properties.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
       .map(feature => {
-        // Calculate center point of the neighborhood
         const coordinates = feature.geometry.coordinates[0];
         const lng = coordinates.reduce((sum, point) => sum + point[0], 0) / coordinates.length;
         const lat = coordinates.reduce((sum, point) => sum + point[1], 0) / coordinates.length;
@@ -52,7 +49,7 @@ export default function SearchBar({ geoJsonData, onSelectNeighborhood, isVisible
           center: [lng, lat] as [number, number]
         };
       })
-      .slice(0, 5); // Limit to 5 suggestions
+      .slice(0, 5);
 
     setSuggestions(filteredSuggestions);
   }, [searchTerm, geoJsonData]);
@@ -67,11 +64,12 @@ export default function SearchBar({ geoJsonData, onSelectNeighborhood, isVisible
     if (suggestion) {
       onSelectNeighborhood(suggestion.id, suggestion.center);
       setShowSuggestions(false);
+      setSearchTerm('');
     }
   };
 
   const handleSuggestionClick = (id: string, name: string, center: [number, number]) => {
-    setSearchTerm(name);
+    setSearchTerm('');
     onSelectNeighborhood(id, center);
     setShowSuggestions(false);
   };
